@@ -31,14 +31,10 @@ fn parse_input(input: &str) -> Vec<HashMap<&str, &str>> {
 
 const REQUIRED_FIELDS: &[&str] = &["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 
-fn create_any_validator() -> Box<dyn Fn(&str) -> bool> {
-    Box::new(move |_: &str| true)
-}
-
 fn create_dummy_validation() -> HashMap<&'static str, Box<dyn Fn(&str) -> bool>> {
-    let mut map = HashMap::new();
+    let mut map: HashMap<&'static str, Box<dyn Fn(&str) -> bool>> = HashMap::new();
     for field in REQUIRED_FIELDS {
-        map.insert(*field, create_any_validator());
+        map.insert(*field, Box::new(move |_: &str| true));
     }
     map
 }
