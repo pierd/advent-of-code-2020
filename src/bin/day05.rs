@@ -20,7 +20,7 @@ fn seat_id((row, col): (usize, usize)) -> usize {
 
 fn find_missing(seats: &[(usize, usize)]) -> Option<usize> {
     let all_seats = seats
-        .into_iter()
+        .iter()
         .cloned()
         .map(seat_id)
         .collect::<HashSet<_>>();

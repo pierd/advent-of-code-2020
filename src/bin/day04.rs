@@ -78,8 +78,8 @@ fn create_validation() -> HashMap<&'static str, Box<dyn Fn(&str) -> bool>> {
                 if let Some(h) = caps.get(1).and_then(|m| m.as_str().parse::<usize>().ok()) {
                     let unit = caps.get(2).map(|m| m.as_str());
                     match unit {
-                        Some("cm") => 150 <= h && h <= 193,
-                        Some("in") => 59 <= h && h <= 76,
+                        Some("cm") => (150..=193).contains(&h),
+                        Some("in") => (59..=76).contains(&h),
                         _ => false,
                     }
                 } else {

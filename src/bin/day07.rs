@@ -82,7 +82,7 @@ fn count_inner(rules: &[(String, Vec<(usize, String)>)], bag: &str) -> usize {
         .filter(|(rule_bag, _)| bag == rule_bag)
         .map(|(_, contents)| {
             contents
-                .into_iter()
+                .iter()
                 .map(|(count, bag)| count_inner(rules, bag) * count)
                 .sum::<usize>()
                 + 1
