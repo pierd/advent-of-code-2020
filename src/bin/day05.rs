@@ -19,11 +19,7 @@ fn seat_id((row, col): (usize, usize)) -> usize {
 }
 
 fn find_missing(seats: &[(usize, usize)]) -> Option<usize> {
-    let all_seats = seats
-        .iter()
-        .cloned()
-        .map(seat_id)
-        .collect::<HashSet<_>>();
+    let all_seats = seats.iter().cloned().map(seat_id).collect::<HashSet<_>>();
     dbg!(all_seats.len());
     for id in 1..888 {
         if !all_seats.contains(&id)
