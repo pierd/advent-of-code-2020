@@ -134,22 +134,21 @@ where
     map2
 }
 
+fn count_occupied(map: Vec<Vec<Seat>>) -> usize {
+    map.iter()
+        .flat_map(|row| row.iter())
+        .filter(|s| s.is_occupied())
+        .count()
+}
+
 fn main() {
     let map = parse_input(include_str!("../../inputs/day11.txt")).expect("input should parse");
     println!(
         "Part 1: {}",
-        advance_until_no_change(&map, advance_simple)
-            .iter()
-            .flat_map(|row| row.iter())
-            .filter(|s| s.is_occupied())
-            .count()
+        count_occupied(advance_until_no_change(&map, advance_simple))
     );
     println!(
         "Part 2: {}",
-        advance_until_no_change(&map, advance_complex)
-            .iter()
-            .flat_map(|row| row.iter())
-            .filter(|s| s.is_occupied())
-            .count()
+        count_occupied(advance_until_no_change(&map, advance_complex))
     );
 }
