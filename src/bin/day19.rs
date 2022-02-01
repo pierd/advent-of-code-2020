@@ -102,7 +102,7 @@ impl FromStr for Expr {
             )),
             _ => Ok(Expr::Concat(
                 s.split(' ')
-                    .map(|sub| sub.parse::<usize>().map(|n| Expr::Ref(n)))
+                    .map(|sub| sub.parse::<usize>().map(Expr::Ref))
                     .collect::<Result<Vec<_>, _>>()
                     .map_err(|_| ())?,
             )),
@@ -167,8 +167,7 @@ fn main() {
             exprs[&0]
                 .matched_lens(msg, &exprs)
                 .into_iter()
-                .find(|len| *len == msg.len())
-                .is_some()
+                .any(|len| len == msg.len())
         })
         .count();
     println!("Part 2: {}", matched_messages_count);
