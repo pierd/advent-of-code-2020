@@ -695,16 +695,19 @@ fn main() {
     let solution = solver.solve().expect("there should be a solution");
     println!("Part 1: {}", solution.checksum());
 
-    let pattern: Vec<(usize, usize)> =
-        "                  # \n#    ##    ##    ###\n #  #  #  #  #  #   "
-            .lines()
-            .enumerate()
-            .flat_map(|(row, line)| {
-                repeat(row)
-                    .zip(line.chars().enumerate())
-                    .filter_map(|(row, (col, c))| if c == '#' { Some((row, col)) } else { None })
-            })
-            .collect();
+    let pattern: Vec<(usize, usize)> = concat!(
+        "                  # \n",
+        "#    ##    ##    ###\n",
+        " #  #  #  #  #  #   ",
+    )
+    .lines()
+    .enumerate()
+    .flat_map(|(row, line)| {
+        repeat(row)
+            .zip(line.chars().enumerate())
+            .filter_map(|(row, (col, c))| if c == '#' { Some((row, col)) } else { None })
+    })
+    .collect();
     let merged = solution.merge_image().expect("should be solved by now");
     let (transformed, best_matches) = merged
         .rotations()
@@ -745,7 +748,21 @@ mod tests {
          *  ..#...#.#.
          *  ##.###....
          */
-        "Tile 2383:\n...#.#.#.#\n..##..####\n.##...#...\n..#....#.#\n..#..#.#.#\n##..#.....\n.#....##.#\n.##...#...\n..#...#.#.\n##.###....".parse::<Tile>().unwrap()
+        concat!(
+            "Tile 2383:\n",
+            "...#.#.#.#\n",
+            "..##..####\n",
+            ".##...#...\n",
+            "..#....#.#\n",
+            "..#..#.#.#\n",
+            "##..#.....\n",
+            ".#....##.#\n",
+            ".##...#...\n",
+            "..#...#.#.\n",
+            "##.###...."
+        )
+        .parse::<Tile>()
+        .unwrap()
     }
 
     #[test]
@@ -985,11 +1002,27 @@ mod tests {
 
     #[test]
     fn test_part1_tiny() {
-        let tiles = "Tile 1:\n##\n##\n\nTile 2:\n#.\n#.\n\nTile 3:\n##\n..\n\nTile 4:\n#.\n.."
-            .split("\n\n")
-            .map(|s| s.parse::<Tile>())
-            .collect::<Result<Vec<_>, _>>()
-            .expect("input should parse correctly");
+        let tiles = concat!(
+            "Tile 1:\n",
+            "##\n",
+            "##\n",
+            "\n",
+            "Tile 2:\n",
+            "#.\n",
+            "#.\n",
+            "\n",
+            "Tile 3:\n",
+            "##\n",
+            "..\n",
+            "\n",
+            "Tile 4:\n",
+            "#.\n",
+            ".."
+        )
+        .split("\n\n")
+        .map(|s| s.parse::<Tile>())
+        .collect::<Result<Vec<_>, _>>()
+        .expect("input should parse correctly");
         assert_eq!(tiles.len(), 4);
         let solver = Solver::with_tiles(&tiles);
         let solution = solver.solve().expect("there should be a solution");
