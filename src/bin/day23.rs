@@ -1,4 +1,7 @@
-use std::str::FromStr;
+use std::{
+    fmt::{Display, Write},
+    str::FromStr,
+};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct Cups {
@@ -23,6 +26,7 @@ impl Cups {
             .expect("something has to point to the current")
             .0;
         let first_new_num = self.next_cup.len();
+        self.next_cup.reserve(new_size - first_new_num + 1);
         for i in (first_new_num + 1)..=(new_size + 1) {
             self.next_cup.push(i);
         }
@@ -42,9 +46,10 @@ impl Cups {
         self.next_cup[self.current] = self.next_cup[picked_cups[2]];
 
         // find destination cup
+        let last_cup = self.next_cup.len() - 1;
         let decr = |val: usize| {
             if val == 1 {
-                9
+                last_cup
             } else {
                 val - 1
             }
@@ -66,7 +71,9 @@ impl Cups {
         let mut result = String::new();
         let mut idx = 1;
         while self.next_cup[idx] != 1 {
-            result.push((b'0' + self.next_cup[idx] as u8) as char);
+            result
+                .write_fmt(format_args!("{}", self.next_cup[idx]))
+                .expect("formatting failed");
             idx = self.next_cup[idx];
         }
         result
@@ -95,6 +102,19 @@ impl FromStr for Cups {
         cups.next_cup[*nums.last().unwrap()] = *nums.first().unwrap();
         cups.current = *nums.first().ok_or(())?;
         Ok(cups)
+    }
+}
+
+impl Display for Cups {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let current = self.current;
+        f.write_fmt(format_args!("{}", current))?;
+        let mut i = self.next_cup[current];
+        while i != current {
+            f.write_fmt(format_args!("->{}", i))?;
+            i = self.next_cup[i];
+        }
+        Ok(())
     }
 }
 
@@ -151,6 +171,21 @@ mod tests {
         cups.advance();
         assert_eq!(cups.current, 2);
         assert_eq!(cups.labels_after_1(), "54673289");
+    }
+
+    #[test]
+    fn test_advance_after_extend() {
+        let mut cups = "389125467".parse::<Cups>().unwrap();
+        cups.extend_to_size(15);
+        assert_eq!(
+            cups.to_string(),
+            "3->8->9->1->2->5->4->6->7->10->11->12->13->14->15"
+        );
+        cups.advance();
+        assert_eq!(
+            cups.to_string(),
+            "2->8->9->1->5->4->6->7->10->11->12->13->14->15->3"
+        );
     }
 
     #[test]
