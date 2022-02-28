@@ -30,7 +30,7 @@ impl<'a> Food<'a> {
     }
 }
 
-fn parse_input<'a>(input: &'a str) -> Result<Vec<Food<'a>>, ()> {
+fn parse_input(input: &str) -> Result<Vec<Food<'_>>, ()> {
     input.lines().map(Food::from_str).collect()
 }
 
@@ -64,11 +64,10 @@ impl<'a> ResolvedAllergens<'a> {
 }
 
 fn resolve<'a>(foods: &[Food<'a>]) -> ResolvedAllergens<'a> {
-    // TODO: learn: how to map deref on iterator
     let all_allergens: HashSet<Allergen<'_>> = foods
         .iter()
         .flat_map(|food| food.allergens.iter())
-        .map(|a| *a)
+        .copied()
         .collect();
 
     let mut allergen_to_possible_ingredients = HashMap::new();
@@ -77,7 +76,7 @@ fn resolve<'a>(foods: &[Food<'a>]) -> ResolvedAllergens<'a> {
         for food in foods {
             if food.allergens.contains(allergen) {
                 ingredients = if let Some(ingr) = ingredients {
-                    Some(ingr.intersection(&food.ingredients).map(|a| *a).collect())
+                    Some(ingr.intersection(&food.ingredients).copied().collect())
                 } else {
                     Some(food.ingredients.clone())
                 }
