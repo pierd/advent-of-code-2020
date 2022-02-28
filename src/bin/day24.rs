@@ -102,36 +102,25 @@ fn parse_input(input: &str) -> Vec<Vec<Direction>> {
         .collect()
 }
 
-#[derive(Default, Debug)]
-struct FlipSet<T> {
-    set: HashSet<T>,
+trait FlipSet<T> {
+    fn flip(&mut self, value: T);
 }
 
-impl<T> FlipSet<T> {
-    fn new() -> Self {
-        Self {
-            set: HashSet::new(),
-        }
-    }
-
-    fn len(&self) -> usize {
-        self.set.len()
-    }
-
-    fn flip(&mut self, value: T)
-    where
-        T: Hash + Eq,
-    {
-        if self.set.contains(&value) {
-            self.set.remove(&value);
+impl<T> FlipSet<T> for HashSet<T>
+where
+    T: Hash + Eq,
+{
+    fn flip(&mut self, value: T) {
+        if self.contains(&value) {
+            self.remove(&value);
         } else {
-            self.set.insert(value);
+            self.insert(value);
         }
     }
 }
 
 fn solve_part1(direction_sets: &[Vec<Direction>]) -> usize {
-    let mut black_tiles = FlipSet::new();
+    let mut black_tiles = HashSet::new();
     for path in direction_sets {
         let coords = Coords::default().move_on_path(path);
         black_tiles.flip(coords);
