@@ -56,6 +56,15 @@ enum Direction {
     NorthEast,
 }
 
+const ALL_DIRECTIONS: &[Direction] = &[
+    Direction::East,
+    Direction::SouthEast,
+    Direction::SouthWest,
+    Direction::West,
+    Direction::NorthWest,
+    Direction::NorthEast,
+];
+
 struct DirectionAdapterIterator<Iter> {
     iter: Iter,
 }
@@ -119,18 +128,52 @@ where
     }
 }
 
-fn solve_part1(direction_sets: &[Vec<Direction>]) -> usize {
+fn solve_part1(direction_sets: &[Vec<Direction>]) -> HashSet<Coords> {
     let mut black_tiles = HashSet::new();
     for path in direction_sets {
         let coords = Coords::default().move_on_path(path);
         black_tiles.flip(coords);
     }
-    black_tiles.len()
+    black_tiles
+}
+
+fn step(black_tiles: HashSet<Coords>) -> HashSet<Coords> {
+    let affected_tiles: HashSet<_> = black_tiles
+        .iter()
+        .flat_map(|coords| {
+            ALL_DIRECTIONS
+                .iter()
+                .map(|dir| coords.move_in_direction(*dir))
+        })
+        .collect();
+    let mut new_black_tiles: HashSet<Coords> = Default::default();
+    for coords in affected_tiles {
+        let blacks_around = ALL_DIRECTIONS
+            .iter()
+            .filter(|dir| black_tiles.contains(&coords.move_in_direction(**dir)))
+            .count();
+        if matches!(
+            (black_tiles.contains(&coords), blacks_around),
+            (true, 1 | 2) | (false, 2)
+        ) {
+            new_black_tiles.insert(coords);
+        }
+    }
+    new_black_tiles
+}
+
+fn solve_part2(mut black_tiles: HashSet<Coords>) -> HashSet<Coords> {
+    for _ in 0..100 {
+        black_tiles = step(black_tiles);
+    }
+    black_tiles
 }
 
 fn main() {
     let direction_sets = parse_input(include_str!("../../inputs/day24.txt"));
-    println!("Part 1: {}", solve_part1(&direction_sets));
+    let initial_black_tiles = solve_part1(&direction_sets);
+    println!("Part 1: {}", initial_black_tiles.len());
+    println!("Part 2: {}", solve_part2(initial_black_tiles).len());
 }
 
 #[cfg(test)]
@@ -162,6 +205,13 @@ mod tests {
     #[test]
     fn test_part1_sample() {
         let direction_sets = parse_input(include_str!("../../inputs/day24-sample.txt"));
-        assert_eq!(solve_part1(&direction_sets), 10);
+        assert_eq!(solve_part1(&direction_sets).len(), 10);
+    }
+
+    #[test]
+    #[ignore]
+    fn test_part2_sample() {
+        let direction_sets = parse_input(include_str!("../../inputs/day24-sample.txt"));
+        assert_eq!(solve_part2(solve_part1(&direction_sets)).len(), 2208);
     }
 }
