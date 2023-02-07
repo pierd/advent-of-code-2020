@@ -42,10 +42,7 @@ impl Expr {
                     None
                 }
             }
-            Expr::Ref(idx) => exprs
-                .get(idx)
-                .map(|expr| expr.matched_len(msg, exprs))
-                .flatten(),
+            Expr::Ref(idx) => exprs.get(idx).and_then(|expr| expr.matched_len(msg, exprs)),
         }
     }
 
@@ -145,7 +142,7 @@ fn main() {
                 .map_or(false, |len| len == msg.len())
         })
         .count();
-    println!("Part 1: {}", matched_messages_count);
+    println!("Part 1: {matched_messages_count}");
 
     exprs.insert(
         8,
@@ -170,7 +167,7 @@ fn main() {
                 .any(|len| len == msg.len())
         })
         .count();
-    println!("Part 2: {}", matched_messages_count);
+    println!("Part 2: {matched_messages_count}");
 }
 
 #[cfg(test)]

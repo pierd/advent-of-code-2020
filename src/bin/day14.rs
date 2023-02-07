@@ -153,16 +153,10 @@ fn parse_input(input: &str) -> Result<Vec<Instr>, ()> {
 fn main() {
     let instrs: Vec<_> =
         parse_input(include_str!("../../inputs/day14.txt")).expect("input should parse");
-    println!(
-        "Part 1: {}",
-        execute_all(&instrs).iter().map(|(_, v)| v).sum::<usize>()
-    );
+    println!("Part 1: {}", execute_all(&instrs).values().sum::<usize>());
     println!(
         "Part 2: {}",
-        execute_all_v2(&instrs)
-            .iter()
-            .map(|(_, v)| v)
-            .sum::<usize>()
+        execute_all_v2(&instrs).values().sum::<usize>()
     );
 }
 
@@ -218,21 +212,12 @@ mod tests {
             "mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X\nmem[8] = 11\nmem[7] = 101\nmem[8] = 0",
         )
         .unwrap();
-        assert_eq!(
-            execute_all(&instrs).iter().map(|(_, v)| v).sum::<usize>(),
-            165
-        );
+        assert_eq!(execute_all(&instrs).values().sum::<usize>(), 165);
     }
 
     #[test]
     fn test_part2_sample() {
         let instrs = parse_input("mask = 000000000000000000000000000000X1001X\nmem[42] = 100\nmask = 00000000000000000000000000000000X0XX\nmem[26] = 1").unwrap();
-        assert_eq!(
-            execute_all_v2(&instrs)
-                .iter()
-                .map(|(_, v)| v)
-                .sum::<usize>(),
-            208
-        );
+        assert_eq!(execute_all_v2(&instrs).values().sum::<usize>(), 208);
     }
 }

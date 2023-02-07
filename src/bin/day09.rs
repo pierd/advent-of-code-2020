@@ -83,7 +83,7 @@ fn main() {
         .collect::<Result<Vec<usize>, _>>()
         .expect("nums should parse");
     let invalid_num = find_invalid(&nums).expect("there should be a not accepted number");
-    println!("Part 1: {}", invalid_num);
+    println!("Part 1: {invalid_num}");
     let contiguous_sum = find_contiguous_sum(&nums, invalid_num);
     assert_eq!(contiguous_sum.iter().sum::<usize>(), invalid_num);
     println!(

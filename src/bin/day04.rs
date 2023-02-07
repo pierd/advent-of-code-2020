@@ -31,18 +31,17 @@ fn parse_input(input: &str) -> Vec<HashMap<&str, &str>> {
 
 const REQUIRED_FIELDS: &[&str] = &["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 
-fn create_dummy_validation() -> HashMap<&'static str, Box<dyn Fn(&str) -> bool>> {
-    let mut map: HashMap<&'static str, Box<dyn Fn(&str) -> bool>> = HashMap::new();
+type ValidationsMap = HashMap<&'static str, Box<dyn Fn(&str) -> bool>>;
+
+fn create_dummy_validation() -> ValidationsMap {
+    let mut map: ValidationsMap = HashMap::new();
     for field in REQUIRED_FIELDS {
         map.insert(*field, Box::new(move |_: &str| true));
     }
     map
 }
 
-fn is_valid_passport(
-    passport: &HashMap<&str, &str>,
-    validation: &HashMap<&str, Box<dyn Fn(&str) -> bool>>,
-) -> bool {
+fn is_valid_passport(passport: &HashMap<&str, &str>, validation: &ValidationsMap) -> bool {
     for (field, validation_fn) in validation.iter() {
         if passport.get(field).map(|s| validation_fn(s)) != Some(true) {
             return false;
@@ -64,7 +63,7 @@ fn create_regex_validator(re: Regex) -> Box<dyn Fn(&str) -> bool> {
     Box::new(move |s: &str| re.is_match(s))
 }
 
-fn create_validation() -> HashMap<&'static str, Box<dyn Fn(&str) -> bool>> {
+fn create_validation() -> ValidationsMap {
     let mut map = HashMap::new();
     map.insert("byr", create_year_validator(1920, 2002));
     map.insert("iyr", create_year_validator(2010, 2020));
@@ -113,7 +112,7 @@ fn main() {
         "Part 1: {}",
         passports
             .iter()
-            .filter(|p| is_valid_passport(*p, &dummy_validation))
+            .filter(|p| is_valid_passport(p, &dummy_validation))
             .count()
     );
     let proper_validation = create_validation();
@@ -121,7 +120,7 @@ fn main() {
         "Part 2: {}",
         passports
             .iter()
-            .filter(|p| is_valid_passport(*p, &proper_validation))
+            .filter(|p| is_valid_passport(p, &proper_validation))
             .count()
     );
 }

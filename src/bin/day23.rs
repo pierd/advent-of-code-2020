@@ -108,10 +108,10 @@ impl FromStr for Cups {
 impl Display for Cups {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let current = self.current;
-        f.write_fmt(format_args!("{}", current))?;
+        f.write_fmt(format_args!("{current}"))?;
         let mut i = self.next_cup[current];
         while i != current {
-            f.write_fmt(format_args!("->{}", i))?;
+            f.write_fmt(format_args!("->{i}"))?;
             i = self.next_cup[i];
         }
         Ok(())
@@ -213,7 +213,7 @@ mod tests {
         }
 
         {
-            let mut cups = sample_cups.clone();
+            let mut cups = sample_cups;
             for _ in 0..100 {
                 cups.advance();
             }
